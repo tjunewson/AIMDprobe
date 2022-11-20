@@ -1,5 +1,5 @@
 """
-useful functions for analyze energy and structure of AIMD simulations
+useful functions for analyze structures of AIMD simulations
 """
 
 import os

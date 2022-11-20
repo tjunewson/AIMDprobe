@@ -1,31 +1,37 @@
-###plot radial distribution of solvents
+"""
+plot radial distribution of solvents (H2O) using AIMDprobe
+"""
 import os
-import csv
-import json
 import numpy as np
 from ase import Atoms
 from ase.io import  read, write
 import matplotlib.pyplot as plt 
-
-ads_list = []
-slab_list = np.arange(64)
+from aimdprobe.init_data import init_data, get_raw_traj
+from aimdprobe.structure_probe.probe_water_distribution import get_rdf 
 
 fp = os.getcwd()
-fn = 'au_clean1_vasprun.xml'
-#fn = 'OUTCAR'
+fn = 'vasprun.xml'
+# fn = 'OUTCAR'
+
+# get raw data
 raw_data = init_data(fp, fn)
 raw_traj = get_raw_traj(raw_data)
 
+# parameters
 nbins = 100
-O_bins = np.zeros(nbins)
-H_bins = np.zeros(nbins)
-for traj in raw_traj:
-    walls, o_bins, h_bins = get_rdf_3d(raw_data, traj, ads_list, slab_list, nbins)
-    O_bins += o_bins
-    H_bins += h_bins
+ads_list = [] # no adsorbate in the system
+slab_list = np.arange(64) # metal slab has 64 Au atoms
 
-O_rdf = O_bins/len(raw_traj)
-H_rdf = H_bins/len(raw_traj)
+O_rdf = np.zeros(nbins)
+H_rdf = np.zeros(nbins)
+
+for traj in raw_traj:
+    walls, o_rdf, h_rdf = get_rdf(raw_data, traj, ads_list, slab_list, nbins)
+    O_rdf += o_rdf
+    H_rdf += h_rdf
+
+O_rdf = O_rdf/len(raw_traj)
+H_rdf = H_rdf/len(raw_traj)
 walls = walls
 
 fig, ax = plt.subplots(figsize=(8,6))

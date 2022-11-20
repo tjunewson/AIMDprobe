@@ -4,7 +4,7 @@ import json
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
-
+from aimdprobe.useful_functions import get_cumulative_avg
 
 ###### main functions ######
 def get_energy(raw_data):
@@ -36,7 +36,20 @@ def get_temperatures(outcar):
     return temperatures, temperatures_avg  
 
             
-
+def get_kinetic_energy(outcar):
+    """
+    Get kinetic energies in outcar in lines of 'kinetic energy EKIN   =         6.068099'
+    """
+    with open(outcar, 'r') as file:
+        kinetic_energy = []
+        for line in file:
+            if 'kinetic' and 'EKIN' in line.split():
+                #print(line.split())
+                ekin = [float(w) for w in line.split() if w[0].isdigit()] # get floats in the line
+                kinetic_energy.append(ekin)
+ 
+    kinetic_energy_avg = get_cumulative_avg(kinetic_energy)
+    return kinetic_energy, kinetic_energy_avg  
     
     
     

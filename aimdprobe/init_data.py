@@ -4,7 +4,9 @@ import json
 from ase import Atoms
 from ase.io import read, write
 
-## Retrieve AIMD results from OUTCAR/vasprun.xml files
+"""
+Retrieve AIMD results from OUTCAR/vasprun.xml files
+"""
 
 def init_data(filepath, filename, fmat='vasp'):
     fpath = filepath
@@ -23,11 +25,12 @@ def get_raw_traj(raw_data):
 
 class MakeDatafile:
     """
-    creat a json file with a dictionary containing: 
+    create a json file with a dictionary containing:
     runtime, temperature, potential_energy, element, traj
     key: runtime
     source: OUTCAR
     """
+    
     output_file = str
 
     def __init__(self,filepath, filename):
@@ -48,9 +51,9 @@ class MakeDatafile:
         yield runtime, values
 
     def store_data(self):
-        
+        """ store data dictionaries for the datafile.json """
         data_dict = dict(zip(self.data.get_data()))
         json_object = json.dumps(data_dict)
         with open(self.output_file, "w") as handle:
             handle.write(json_object)
-        print('A json file containing major raw_data has been created!')
+        print('A json file containing major results of your AIMD simulations has been created!')

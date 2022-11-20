@@ -2,7 +2,7 @@ import os
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
-from aimdprobe.useful_functions import get_solvent_traj, get_top_slab_mean_z_positions
+from aimdprobe.useful_functions import get_solvent_traj, get_top_slab_mean_z_positions, get_real_distance
 
 
 ###### main functions ######
@@ -39,8 +39,8 @@ def get_adsorbed_solvent_new(raw_data,traj, ads_list, slab_list, dist): ##N_w_ad
     solvent_traj, solvent_symb, o_h2o_traj, h_h2o_traj = get_solvent_traj(raw_data, traj, ads_list, slab_list)
     sol_pos_z = [t[2] for t in o_h2o_traj] #use O to represent H2O
     mean_top_z = get_top_slab_mean_z_positions(traj, slab_list)
-    n_s = len(slab_list)
-    N_w = len(sol_pos_z)
+    n_s = len(slab_list) # number of adsorbate atoms
+    N_w = len(sol_pos_z) # number of solvents, i.e., H2O here
     assert len(sol_pos_z) == len(mean_top_z)
 
     N_w_ads = []
@@ -84,41 +84,35 @@ def get_adsorbed_solvent_mass(raw_data,traj, ads_list, slab_list, dist): ##N_w_a
     sol_pos_z = [t[2] for t in o_h2o_traj] #use O to represent H2O
     mean_top_z = get_top_slab_mean_z_positions(traj, slab_list)
     N_s = len(slab_list)
-    N_w_ads = []
-    
-    assert len(sol_pos_z) == len(mean_z_top)
-    for id, data in enumerate(raw_data):
-        count = 0
-        traj = data.get_positions()[N_s:] ##get the xyz positions of solvents
-        X, Y, Z = data.get_cell() ##get the x, y of the unit cell size
+    N_w = len(sol_pos_z)
 
-        #symb = data.get_chemical_symbols()[N_s:]
-        """
-        slice positions for O and H respectively
-        """
-        pos_o = traj[:N_w]
-        pos_h = traj[N_w:N_w*3]
-        #print(mean_z_top[id])
-        for i, pos_o in enumerate(pos_o): ##O positions
-            for j, pos_h_1 in enumerate(pos_h): ##H positions
-                list(pos_h).pop(j)
-                h2o_ = []
-                for k, pos_h_2 in enumerate(pos_h):
-                    """
-                    consider the boundary effect of H-O-H, 
-                    when H and O locate at different unit cells,
-                    thus if d(O-H)x or y > len(unit cell), d(O-H)x or y += -len(unit cell)
-                    """
-                    h2o_.append([i,j,k,get_real_dist(pos_o,pos_h_1,X,Y,Z)+get_real_dist(pos_o,pos_h_2,X,Y,Z)])
-                h2o_ = sorted(h2o_, key=lambda x: x[3])
-                o,h1,h2 = h2o_[0][:3]
-                h2o = Atoms('H2O', positions = [tuple(traj[a]) for a in [h1,h2,o]])
-                if h2o.get_center_of_mass()[2] - mean_z_top[id] <= dist:
-                    #print(h2o.get_center_of_mass()[2])
-                    count += 1
-        N_w_ads.append(count/2) ##in counting process, each H2O was counted twice, so /2 is needed here.
+    X, Y, Z = data.get_cell() ##get the x, y of the unit cell size
+    X = X[0]
+    Y = Y[1]
+    Z = Z[2]
+    """
+    slice positions for O and H respectively
+    """
+    count = 0
+    for i, pos_o in enumerate(o_h2o_traj): ##O positions
+        for j, pos_h_1 in enumerate(h_h2o_traj): ##H positions
+            list(pos_h).pop(j)
+            h2o_ = []
+            for k, pos_h_2 in enumerate(pos_h):
+                """
+                consider the boundary effect of H-O-H, 
+                when H and O locate at different unit cells,
+                thus if d(O-H)x or y > len(unit cell), d(O-H)x or y += -len(unit cell)
+                """
+                h2o_.append([i, j, k, get_real_distance(raw_data, pos_o, pos_h_1) + get_real_distance(raw_data, pos_o, pos_h_2)])
 
-    return np.mean(N_w_ads)/n_s
+            h2o_ = sorted(h2o_, key=lambda x: x[3])
+            o,h1,h2 = h2o_[0][:3]
+            h2o = Atoms('H2O', positions = [tuple(traj[a]) for a in [h1,h2,o]])
+            if h2o.get_center_of_mass()[2] - mean_z_top[id] <= dist:
+                count += 1
+    N_w_ads = count/2 ## in counting process, each H2O was counted twice, so /2 is needed here.
+    return np.mean(N_w_ads)/n_s ## normalize to per surface site
 
 
 

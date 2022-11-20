@@ -1,14 +1,15 @@
-###the script for plotting energies and temperatures
-
-import os
+"""
+plot energies and temperatures
+"""
 import numpy as np
+import matplotlib.pyplot as plt
 from ase import Atoms
 from ase.io import  read, write
-import matplotlib.pyplot as plt
 
+from aimdprobe.energy_probe.functions import get_energy, get_temperatures
 
 #get raw_data
-fn = 'OUTCAR'
+fn = 'OUTCAR' ## change to your raw data file
 raw_data = read(fn,':')
 
 pot_energy, pot_energy_avg = get_energy(raw_data)
@@ -30,5 +31,6 @@ for ax in [ax, ax1]:
         ax.set_ylabel('T (K)')
     else:
         ax.set_ylabel('Energy (eV)')
+
 fig.tight_layout()
 fig.savefig('energy.png',dpi=100)
