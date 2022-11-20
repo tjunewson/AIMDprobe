@@ -28,7 +28,6 @@ class MakeDatafile:
     key: runtime
     source: OUTCAR
     """
-    input_file = str
     output_file = str
 
     def __init__(self,filepath, filename):

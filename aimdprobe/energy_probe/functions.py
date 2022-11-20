@@ -5,56 +5,35 @@ import numpy as np
 from ase import Atoms
 from ase.io import read, write
 
-def get_cumulative_avg(values):
-    return np.cumsum(values) / np.arange(1, len(values) + 1)
 
-def isfloat(value): ##remove bugged energies in calculations
-    if value is None:
-        return False
-    try:
-        float(value)
-        return True
-    except ValueError:
-        return False
+###### main functions ######
+def get_energy(raw_data):
+    """
+    1. Get potential energies from vasprun.xml or outcar
+    2. Note that here is only potential energy at 0K
+    """
+    pot_energy = []
+    for rd in raw_data:
+        pot_energy.append(rd.get_potential_energy())
+    pot_energy_avg = get_cumulative_avg(pot_energy)
+    return pot_energy, pot_energy_avg
 
-
-class EnergyAnalyzer:
-
-    raw_energy_file: str
-    ca_energy_file: str
-    temperature_file: str
-
-    def __init__(self):
-        self.analyze_energy()
-        self.store_energy()
-
-    def get_energy(self, raw_data): #get potential energies from vasprun.xml
-        potential_energy = []
-        temperature = []
-        for rd in raw_data:
-            potential_energy.append(rd.get_potential_energy())
-            temperature.append(rd.get_temperature())
-        yield potential_energy, temperature
-
-    def analyze_energy(self):
-        tidy_energy = []
-        for i, energy in enumerate(self.get_energy()):
-            if isfloat(energy):
-                tidy_energy.append(Energy)
-            else:
-                tidy_energy.append(self.get_energy()[0])
-        
-        self.tidy_energy = tidy_energy
-        self.tidy_energy_ca = get_cumulative_avg(tidy_energy)
-    
-    def store_energy(self):
-    # Save the file as a json
-        with open(self.raw_energy_file, 'w') as handle:
-            json.dump(self.tidy_energy, handle)
-        with open(self.ca_energy_file,'w') as handle:
-            json.dump(self.tidy_energy_ca, handle)
-        with open(self.temperature_file,'w') as handle:
-            json.dump(self.temperature, handle)
+def get_temperatures(outcar):
+    """
+    1. Get temperature in outcar in lines of 'kin. lattice  EKIN_LAT=         0.000000  (temperature  293.40 K)'
+    2. Note that vasprun only shows results at 0K, thus no T and kinetic_energy are stored
+    """
+    with open(outcar, 'r') as file:
+        temperatures = []
+        for line in file:
+            if 'EKIN_LAT=' in line.split():
+                #print(line.split())
+                numbs = [float(w) for w in line.split() if w[0].isdigit()] # get floats in the line
+                t = numbs[1]
+                temperatures.append(t)
+ 
+    temperatures_avg = get_cumulative_avg(temperatures)
+    return temperatures, temperatures_avg  
 
             
 

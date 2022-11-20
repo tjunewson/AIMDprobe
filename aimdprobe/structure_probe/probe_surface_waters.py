@@ -2,16 +2,20 @@ import os
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
+from aimdprobe.useful_functions import get_solvent_traj, get_top_slab_mean_z_positions
 
-def get_adsorbed_h2o(raw_data,traj, N_w, n_s, ads_list, slab_list, dist): ##N_w_ads/N_s = N_w_ads site-1
+
+###### main functions ######
+def get_adsorbed_h2o(raw_data,traj, ads_list, slab_list, dist): ##N_w_ads/N_s = N_w_ads site-1
     """
     retrieve the cumulative number of adsorbed solvents by calculating the
     z-direction distance between solvent molecule and top-slab plane;
     here, we use O in H2O to estimate the position of water molecules;
     """
-    solvent_traj, o_h2o_traj, h_h2o_traj = get_h2o_separate_traj(raw_data,traj, N_w, ads_list, slab_list)
-    sol_pos_z = [t[2] for t in o_h2o_traj]
-    mean_top_z = get_top_slab_mean_z_positions(traj, n_s, slab_list)
+    solvent_traj, solvent_symb, o_h2o_traj, h_h2o_traj = get_solvent_traj(raw_data, traj, ads_list, slab_list)
+    sol_pos_z = [t[2] for t in o_h2o_traj] #use O to represent H2O
+    mean_top_z = get_top_slab_mean_z_positions(traj, slab_list)
+    n_s = len(slab_list)
     count = 0
     for spz in sol_pos_z:
         if abs(abs(spz - mean_z_top) - dist) <= 0.05:
@@ -21,7 +25,7 @@ def get_adsorbed_h2o(raw_data,traj, N_w, n_s, ads_list, slab_list, dist): ##N_w_
         N_w_ads.append(count)
     return np.mean(N_w_ads)/n_s ##normalized to per site
 
-def get_adsorbed_solvent_new(raw_traj, n_s, N_w, dist): ##N_w_ads/N_s = N_w_ads site-1
+def get_adsorbed_solvent_new(raw_data,traj, ads_list, slab_list, dist): ##N_w_ads/N_s = N_w_ads site-1
     """
     retrieve the cumulative number of adsorbed solvents by calculating the
     z-direction distance between solvent molecule and top-slab plane;
@@ -32,12 +36,14 @@ def get_adsorbed_solvent_new(raw_traj, n_s, N_w, dist): ##N_w_ads/N_s = N_w_ads 
     e.g., O is the 15th in list of O_AN, Hs should be 30th and 31th in H_AN.
     """
 
-    sol_pos_z = get_solvent_z_positions_new(raw_traj,N_w,N_s)
-    mean_z_top = get_top_slab_mean_z_positions(raw_traj,N_s,n_s)
-    assert len(sol_pos_z) == len(mean_z_top)
+    solvent_traj, solvent_symb, o_h2o_traj, h_h2o_traj = get_solvent_traj(raw_data, traj, ads_list, slab_list)
+    sol_pos_z = [t[2] for t in o_h2o_traj] #use O to represent H2O
+    mean_top_z = get_top_slab_mean_z_positions(traj, slab_list)
+    n_s = len(slab_list)
+    N_w = len(sol_pos_z)
+    assert len(sol_pos_z) == len(mean_top_z)
 
     N_w_ads = []
-
     for i,spz in enumerate(sol_pos_z):
         count = 0
         o_an=[]
@@ -64,8 +70,8 @@ def get_adsorbed_solvent_new(raw_traj, n_s, N_w, dist): ##N_w_ads/N_s = N_w_ads 
     return np.mean(N_w_ads)/n_s
 
 
-
-def get_adsorbed_solvent_mass(raw_data, N_w, N_s, n_s, dist): ##N_w_ads/N_s = N_w_ads site-1
+### still in test ###
+def get_adsorbed_solvent_mass(raw_data,traj, ads_list, slab_list, dist): ##N_w_ads/N_s = N_w_ads site-1
     """
     retrieve the cumulative number of adsorbed solvents by calculating the
     z-direction distance between mass center of solvent molecule and top-slab plane;
@@ -74,11 +80,13 @@ def get_adsorbed_solvent_mass(raw_data, N_w, N_s, n_s, dist): ##N_w_ads/N_s = N_
     2. get_center_of_mass(); 
     3. if z_mass_center < dist, then count += 1
     """
-    
+    solvent_traj, solvent_symb, o_h2o_traj, h_h2o_traj = get_solvent_traj(raw_data, traj, ads_list, slab_list)
+    sol_pos_z = [t[2] for t in o_h2o_traj] #use O to represent H2O
+    mean_top_z = get_top_slab_mean_z_positions(traj, slab_list)
+    N_s = len(slab_list)
     N_w_ads = []
-    #sol_pos_z = get_solvent_z_positions_new(raw_traj,N_w,N_s)
-    mean_z_top = get_top_slab_mean_z_positions(raw_traj,N_s,n_s)
-    #assert len(sol_pos_z) == len(mean_z_top)
+    
+    assert len(sol_pos_z) == len(mean_z_top)
     for id, data in enumerate(raw_data):
         count = 0
         traj = data.get_positions()[N_s:] ##get the xyz positions of solvents
@@ -112,16 +120,8 @@ def get_adsorbed_solvent_mass(raw_data, N_w, N_s, n_s, dist): ##N_w_ads/N_s = N_
 
     return np.mean(N_w_ads)/n_s
 
-# def check_honds_angles(a, b, a_elem, N_s, N_w, N_ads, angle): #a is the atom in adsorbate, b is the atom in water
-#     if a_elem == 'O':
 
-#     else:
-def get_ads_mean_z_positions(raw_traj, N_ads):
-    mean_z_ads = []
-    for traj in raw_traj:
-        ads_pos_z = traj[-1*N_ads:,2]
-        mean_z_ads.append(np.mean(ads_pos_z))
-    return mean_z_ads
+
 
 
 
