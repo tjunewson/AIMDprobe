@@ -35,16 +35,15 @@ time = np.arange(len(N_w_ads_avg))*0.001 # ps
 
 fig, ax = plt.subplots(figsize=(8,6))
 
-ax.plot(np.arange(0,runtime)*0.001, N_w_ads, lw = 1, color = 'grey', alpha = 0.5)
-ax.plot(np.arange(0,runtime)*0.001, N_w_ads_avg, lw = 3, color = 'black')
+ax.plot(time, N_w_ads, lw = 1, color = 'grey', alpha = 0.5)
+ax.plot(time, N_w_ads_avg, lw = 3, color = 'black')
 
-ax.annotate('Average H bonds: '+str(round(N_w_ads_avg[-1],2)), (1, 2.5), fontsize = 15)
+ax.annotate('Average adsorbed solvents: '+str(round(N_w_ads_avg[-1],2)), (1, 2.5), fontsize = 15)
 
 ax.set_xlabel('Time (ps)', fontsize = 20)
 ax.set_ylabel('N / per adsorbate', fontsize = 20)
 ax.tick_params(labelsize=20)
-ax.set_xlim(0,10)
-ax.set_ylim(0,0.3)
+
 fig.tight_layout()
 fig.savefig('n_w_ads.png', dpi = 150)
 

@@ -45,8 +45,8 @@ def get_kinetic_energy(outcar):
         for line in file:
             if 'kinetic' and 'EKIN' in line.split():
                 #print(line.split())
-                ekin = [float(w) for w in line.split() if w[0].isdigit()] # get floats in the line
-                kinetic_energy.append(ekin)
+                ekin = [float(w) for w in line.split() if w[0].isdigit()] # get the float in the line
+                kinetic_energy.append(ekin[0])
  
     kinetic_energy_avg = get_cumulative_avg(kinetic_energy)
     return kinetic_energy, kinetic_energy_avg  

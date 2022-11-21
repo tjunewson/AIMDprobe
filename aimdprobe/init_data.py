@@ -1,8 +1,11 @@
 import os
 import numpy as np
 import json
+from dataclasses import dataclass
 from ase import Atoms
 from ase.io import read, write
+from aimdprobe.energy_probe.functions import get_energy, get_temperatures, get_kinetic_energy
+from aimdprobe.structure_probe.functions import get_elements
 
 """
 Retrieve AIMD results from OUTCAR/vasprun.xml files
@@ -28,32 +31,40 @@ class MakeDatafile:
     create a json file with a dictionary containing:
     runtime, temperature, potential_energy, element, traj
     key: runtime
-    source: OUTCAR
+    source: OUTCAR (if not temperatures, you could use vasprun.xml as well)
     """
-    
-    output_file = str
 
-    def __init__(self,filepath, filename):
+    filepath : str
+    filename : str 
+    output_file : str
+
+    def __init__(self, filepath, filename, output_file):
         self.data = init_data(filepath, filename, fmat='vasp')
-        self.get_values()
-        self.store_values()
-    
-    def get_data(self):
+        self.output_file = output_file
+        self.get_data(filepath, filename)
+        self.store_data( filepath, filename)
+        
+    def get_data(self, filepath, filename):
         """ summarize all values for the datafile """
-        runtime = range(len(self.data))
-        temperatures, temperatures_avg = get_temperatures() 
+        runtime = np.arange(len(self.data))
+        temperatures, temperatures_avg = get_temperatures(filepath+'/'+filename) 
         pot_energy, pot_energy_avg = get_energy(self.data)
+        kin_energy, kin_energy_avg = get_kinetic_energy(filepath+'/'+filename)
         elements = get_elements(self.data)
         raw_traj = get_raw_traj(self.data)
 
-        #attention to json format
-        values = [[str(elements), pot_energy[i], pot_energy_avg[i],raw_traj[i].tolist()] for i in runtime]
+        #attention to json format, but you could alsp use 'MyEncoder' to avoid errors afterwards
+        values = [[str(elements), temperatures[i], pot_energy[i], kin_energy[i], raw_traj[i].tolist()] for i in runtime]
         yield runtime, values
 
-    def store_data(self):
+    def store_data(self, filepath, filename):
         """ store data dictionaries for the datafile.json """
-        data_dict = dict(zip(self.data.get_data()))
-        json_object = json.dumps(data_dict)
-        with open(self.output_file, "w") as handle:
-            handle.write(json_object)
-        print('A json file containing major results of your AIMD simulations has been created!')
+
+        self.data_dict = []
+        for runtime, values in self.get_data(filepath, filename):
+            self.data_dict.append(dict(zip(runtime.tolist(), values)))
+
+        with open(self.output_file, 'w') as handle:
+            json.dump(self.data_dict[0], handle)
+
+        print('Congratulations, dear AIMDers! \n \n The json file of your AIMD results has been created!')

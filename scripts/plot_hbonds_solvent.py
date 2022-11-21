@@ -9,6 +9,7 @@ from ase.io import  read, write
 import matplotlib.pyplot as plt 
 from aimdprobe.init_data import init_data, get_raw_traj
 from aimdprobe.structure_probe.probe_h_bonds import get_hbonds_sol
+from aimdprobe.useful_functions import get_cumulative_avg
 
 fp = os.getcwd()
 fn = 'vasprun.xml'
@@ -29,21 +30,20 @@ for traj in raw_traj:
     h_bonds = get_hbonds_sol(raw_data, traj, ads_list, slab_list, hdist)
     H_bonds.append(h_bonds)
 
-H_bonds_avg = get_cumulative_avg(h_bonds)
+H_bonds_avg = get_cumulative_avg(H_bonds)
 time = np.arange(len(H_bonds_avg))*0.001 # ps
 
 fig, ax = plt.subplots(figsize=(8,6))
 
-ax.plot(np.arange(0,runtime)*0.001, H_bonds_avg, lw = 1, color = 'grey', alpha = 0.5)
-ax.plot(np.arange(0,runtime)*0.001, H_bonds_avg, lw = 3, color = 'black')
+ax.plot(time, H_bonds, lw = 1, color = 'grey', alpha = 0.5)
+ax.plot(time, H_bonds_avg, lw = 3, color = 'black')
 
 ax.annotate('Average H bonds: '+str(round(H_bonds_avg[-1],2)), (1, 2.5), fontsize = 15)
 
 ax.set_xlabel('Time (ps)', fontsize = 20)
 ax.set_ylabel('N', fontsize = 20)
 ax.tick_params(labelsize=20)
-ax.set_xlim(0,10)
-ax.set_ylim(-0.2,4.2)
+
 fig.tight_layout()
 fig.savefig('n_hbonds.png', dpi = 150)
 

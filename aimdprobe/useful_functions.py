@@ -72,7 +72,9 @@ def get_real_distance(raw_data, a, b):
     lattice constant = X, Y, Z
     """
     X,Y,Z = raw_data[0].get_cell()
-    X = X[0], Y = Y[1], Z = Z[2]
+    X = X[0]
+    Y = Y[1]
+    Z = Z[2]
     c = [aa - bb for aa, bb in zip(a,b)]
     # avoid periodic distances
     for i, cc in enumerate(c):

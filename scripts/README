@@ -1,0 +1,39 @@
+## Something you might need to know before using these scripts
+
+<br>
+
+- The main functions of AIMDprobe help analyze results from VASP-based AIMD simulations with input file: OUTCAR, vasprun.xml etc.
+
+- We split the atomic system into: slab (slab_list), adsorbate (ads_list) and solvent (solv_list) for structure_probe, serving as most important arguments for the probe functions.
+
+- If you would like to analyze a series of input files, e.g., you have 10 chronological OUTCARs, then you could add a loop before all the functions:
+
+<br>
+
+Let's take energy_probe as an example:
+
+```
+import numpy as np
+import matplotlib.pyplot as plt
+from ase import Atoms
+from ase.io import  read, write
+from aimdprobe.energy_probe.functions import get_energy
+from aimdprobe.useful_functions import get_cumulative_avg
+
+outcars = ['outcar1', 'outcar2', ... , 'outcarN']
+
+Pot_energy = []
+for outcar in outcars:
+    raw_data = read(ourcar,':')
+    pot_energy, pot_energy_avg = get_energy(raw_data)
+    Pot_energy.append(pot_energy)
+
+Pot_energy_avg = get_cumulative_avg(Pot_energy)
+Time = np.arange(len(Pot_energy))
+
+fig, ax = plt.subplots()
+ax.plot(Time, Pot_energy)
+ax.plot(Time, Pot_energy_avg)
+
+```
+

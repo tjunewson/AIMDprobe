@@ -2,7 +2,7 @@ import os
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
-from aimdprobe.useful_functions import get_elements, get_solvent_traj, get_cumulative_avg
+from aimdprobe.useful_functions import get_elements, get_solvent_traj, get_cumulative_avg, get_real_distance
 from aimdprobe.init_data import get_raw_traj
 
 """
@@ -32,12 +32,12 @@ def get_hbonds_ads(raw_data, traj, slab_list, ads_list, h_dist): #e.g., h_dist =
     for i, symb in enumerate(ads_symb):
         if symb == 'O':
             for h_pos in h_h2o_traj:
-                if abs(np.linalg.norm(ads_traj[i] - h_pos) - h_dist) <= 0.05:
+                if abs(np.linalg.norm(ads_traj[i] - h_pos) - h_dist) <= 0.2:
                     count += 1
                     ads_atom_to_form_hbond_o.append(i)
         elif symb == 'H':
             for o_pos in o_h2o_traj:
-                if abs(np.linalg.norm(ads_traj[i] - o_pos) - h_dist) <= 0.05:
+                if abs(np.linalg.norm(ads_traj[i] - o_pos) - h_dist) <= 0.2:
                     count += 1
                     ads_atom_to_form_hbond_h.append(i)
         else:
@@ -69,7 +69,6 @@ def get_hbonds_sol(raw_data, traj, slab_list, ads_list, h_dist): #e.g., h_dist =
     criteria for H-bonds: O-O distances / cutoff 2.55 AA / O-H-O angle > 140*;
     O-H bond length shoud be longer than a covalent O-H bond, cutoff 1.5 AA
     """
-    print('Start counting h-bonds between waters')
 
     #e.g., slab elements: [Au 64, O 42, C 5, H 84]
         
@@ -79,13 +78,16 @@ def get_hbonds_sol(raw_data, traj, slab_list, ads_list, h_dist): #e.g., h_dist =
 
     # get water atom and element
     solvent_traj, solvent_symb, o_h2o_traj, h_h2o_traj = get_solvent_traj(raw_data, traj, ads_list, slab_list)
+    N_w = len(o_h2o_traj)
     X,Y,Z = raw_data[0].get_cell()
-    X = X[0], Y = Y[1], Z = Z[2]
+    X = X[0]
+    Y = Y[1]
+    Z = Z[2]
     count = 0
     for i, o_pos in enumerate(o_h2o_traj):
         for h_pos in h_h2o_traj:
-            dist_o_h = get_real_distance(o_pos, h_pos)
-            if abs(dist_o_h - h_dist) <= 0.05 and dist_o_h - 1.5 >= 0.05:
-                    count += 1
+            dist_o_h = get_real_distance(raw_data, o_pos, h_pos)
+            if abs(dist_o_h - h_dist) <= 0.2 and dist_o_h > 2:
+                count += 1
     hbonds_sol = count
     return hbonds_sol

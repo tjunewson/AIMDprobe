@@ -9,6 +9,8 @@ from ase.io import  read, write
 from aimdprobe.energy_probe.functions import get_energy, get_temperatures
 
 #get raw_data
+
+
 fn = 'OUTCAR' ## change to your raw data file
 raw_data = read(fn,':')
 
