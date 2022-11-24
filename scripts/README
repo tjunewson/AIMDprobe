@@ -17,16 +17,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ase import Atoms
 from ase.io import  read, write
-from aimdprobe.energy_probe.functions import get_energy
+from aimdprobe.energy_probe.functions import get_energy 
 from aimdprobe.useful_functions import get_cumulative_avg
 
 outcars = ['outcar1', 'outcar2', ... , 'outcarN']
 
 Pot_energy = []
 for outcar in outcars:
-    raw_data = read(ourcar,':')
+    raw_data = read(outcar,':')
     pot_energy, pot_energy_avg = get_energy(raw_data)
-    Pot_energy.append(pot_energy)
+    Pot_energy.extend(pot_energy)
 
 Pot_energy_avg = get_cumulative_avg(Pot_energy)
 Time = np.arange(len(Pot_energy))
