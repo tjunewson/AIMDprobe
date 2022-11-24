@@ -6,7 +6,7 @@
 
 - We split the atomic system into: slab (slab_list), adsorbate (ads_list) and solvent (solv_list) for structure_probe, serving as most important arguments for the probe functions.
 
-- If you would like to analyze a series of input files, e.g., you have 10 chronological OUTCARs, then you could add a loop before all the functions:
+- If you would like to analyze a series of input files, e.g., you have 10 chronological OUTCARs, then you could add a loop before all the functions.
 
 <br>
 
@@ -37,3 +37,4 @@ ax.plot(Time, Pot_energy_avg)
 
 ```
 
+An example script to get energies from multiple vasprun.xml files is given as 'plot_energy_multi_input.py'
