@@ -4,9 +4,9 @@ A simple toolkit to analyze *ab initio* molecular dynamics (AIMD) simulation res
 
 ## Installation
 
-`git clone git@github.com:tjunewson/AIMDprobe.git`
+`git clone https://github.com/tjunewson/AIMDprobe.git`
 
-`pip install AIMDprobe`
+`pip install AIMDprobe/`
 
 ## Dependency
 AIMDprobe uses several Python packages:
