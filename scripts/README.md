@@ -1,12 +1,12 @@
-## Something you might need to know before using these scripts
+## Before you start using the scripts...
 
 <br>
 
-- The main functions of AIMDprobe help analyze results from VASP-based AIMD simulations with input file: OUTCAR, vasprun.xml etc.
+- The main functions of AIMDprobe help analyze results from VASP-based AIMD simulations with input file: OUTCAR, vasprun.xml, etc.
 
-- We split the atomic system into: slab (slab_list), adsorbate (ads_list) and solvent (solv_list) for structure_probe, serving as most important arguments for the probe functions.
+- In structure_probe, we split the atomic system into: **slab (slab_list), adsorbate (ads_list) and solvent (solv_list)**. *_list is a list of atomic numbers of respestive component. e.g., slab_list = numpy.arange(64) in a 64Au-40H2O system, which is based on your own ASE-based structures, e.g., POSCAR.
 
-- If you would like to analyze a series of input files, e.g., you have 10 chronological OUTCARs, then you could add a loop before all the functions.
+- If you would like to analyze a series of input files, e.g., you have 10 chronological OUTCARs, then you could create a loop while using the functions.
 
 <br>
 
