@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 store major raw data from AIMD simulations to a json file for postprocessing
 """

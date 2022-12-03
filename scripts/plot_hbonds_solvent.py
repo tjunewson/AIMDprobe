@@ -1,6 +1,4 @@
-"""
-plot numbers of hydrogen bonds in solvents (H2O) using AIMDprobe
-"""
+#!/usr/bin/env python
 
 import os
 import numpy as np
@@ -11,39 +9,43 @@ from aimdprobe.init_data import init_data, get_raw_traj
 from aimdprobe.structure_probe.probe_h_bonds import get_hbonds_sol
 from aimdprobe.useful_functions import get_cumulative_avg
 
-fp = os.getcwd()
-fn = 'vasprun.xml'
-# fn = 'OUTCAR'
+if __name__ == '__main__':
+    """
+    plot numbers of hydrogen bonds in solvents (H2O) using AIMDprobe
+    """   
+    fp = os.getcwd()
+    fn = 'vasprun.xml'
+    # fn = 'OUTCAR'
 
-# get raw data
-raw_data = init_data(fp, fn)
-raw_traj = get_raw_traj(raw_data)
+    # get raw data
+    raw_data = init_data(fp, fn)
+    raw_traj = get_raw_traj(raw_data)
 
-# parameters
-ads_list = [] # no adsorbate in the system
-slab_list = np.arange(64) # metal slab has 64 Au atoms
-hdist = 2.55 # Angstrom, a general hydrogen bond length H-O---H
+    # parameters
+    ads_list = [] # no adsorbate in the system
+    slab_list = np.arange(64) # metal slab has 64 Au atoms
+    hdist = 2.55 # Angstrom, a general hydrogen bond length H-O---H
 
-H_bonds = []
+    H_bonds = []
 
-for traj in raw_traj:
-    h_bonds = get_hbonds_sol(raw_data, traj, ads_list, slab_list, hdist)
-    H_bonds.append(h_bonds)
+    for traj in raw_traj:
+        h_bonds = get_hbonds_sol(raw_data, traj, ads_list, slab_list, hdist)
+        H_bonds.append(h_bonds)
 
-H_bonds_avg = get_cumulative_avg(H_bonds)
-time = np.arange(len(H_bonds_avg))*0.001 # ps
+    H_bonds_avg = get_cumulative_avg(H_bonds)
+    time = np.arange(len(H_bonds_avg))*0.001 # ps
 
-fig, ax = plt.subplots(figsize=(8,6))
+    fig, ax = plt.subplots(figsize=(8,6))
 
-ax.plot(time, H_bonds, lw = 1, color = 'grey', alpha = 0.5)
-ax.plot(time, H_bonds_avg, lw = 3, color = 'black')
+    ax.plot(time, H_bonds, lw = 1, color = 'grey', alpha = 0.5)
+    ax.plot(time, H_bonds_avg, lw = 3, color = 'black')
 
-ax.annotate('Average H bonds: '+str(round(H_bonds_avg[-1],2)), (1, 2.5), fontsize = 15)
+    ax.annotate('Average H bonds: '+str(round(H_bonds_avg[-1],2)), (1, 2.5), fontsize = 15)
 
-ax.set_xlabel('Time (ps)', fontsize = 20)
-ax.set_ylabel('N', fontsize = 20)
-ax.tick_params(labelsize=20)
+    ax.set_xlabel('Time (ps)', fontsize = 20)
+    ax.set_ylabel('N', fontsize = 20)
+    ax.tick_params(labelsize=20)
 
-fig.tight_layout()
-fig.savefig('n_hbonds.png', dpi = 150)
+    fig.tight_layout()
+    fig.savefig('n_hbonds.png', dpi = 150)
 
