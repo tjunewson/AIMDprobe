@@ -51,6 +51,23 @@ def get_kinetic_energy(outcar):
     kinetic_energy_avg = get_cumulative_avg(kinetic_energy)
     return kinetic_energy, kinetic_energy_avg  
     
+def if_converge(energy, cutoff = 10000, stdev = 0.02):
+    """
+    check the convergence using the energies 
+    in the cutoff region (e.g., last 10000 fs) with stdev (e.g., 0.02 eV) as the criterion
+    """
+    if len(energy) < 10000:
+        return False
+    
+    if np.std(energy[cutoff:]) < stdev:
+        converged_energy = energy[-1]
+        print('The converged energy is ' + str(converged_energy) + ' eV')
+    else:
+        print('The energy is not converged!')
+
+
+
+
     
     
 

@@ -19,7 +19,10 @@ if __name__ == '__main__':
     temperatures, temperatures_avg = get_temperatures(fn)
     time = np.arange(len(raw_data))*0.001 ## ps
 
-    ###for plot
+    ### check convergences
+    if_converge(pot_energy_avg)
+
+    ### for plot
     fig, (ax, ax1) = plt.subplots(1,2,figsize = (12,4))
 
     ax.plot(time,pot_energy,lw=1)
