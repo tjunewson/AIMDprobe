@@ -9,7 +9,7 @@ from aimdprobe.useful_functions import get_solvent_traj, get_top_slab_mean_z_pos
 """
 get the radial distrubution function for water solvent
 """
-def get_rdf(raw_data, traj, ads_list, slab_list, nbins): ##counting solvents along z-axis with nbins density
+def get_rdf(raw_data, traj, ads_list, slab_list, nbins): ## counting solvents along z-axis with nbins density
     solvent_traj, solvent_symb, o_h2o_traj, h_h2o_traj = get_solvent_traj(raw_data, traj, ads_list, slab_list)
     sol_pos_z = [st[2] for st in solvent_traj]
     o_pos_z = [st[2] for st in o_h2o_traj]
@@ -23,7 +23,7 @@ def get_rdf(raw_data, traj, ads_list, slab_list, nbins): ##counting solvents alo
     h_pos_z_norm = [s - slab_top_z for s in h_pos_z]
     Z_norm = Z - slab_top_z
 
-    #make empty bins to put in atoms (e.g., O and H in H2O)
+    # make empty bins to put in atoms (e.g., O and H in H2O)
     walls = np.linspace(0, Z_norm, nbins) #set bottom and top values for nbins
     o_bins = np.zeros(nbins)
     h_bins = np.zeros(nbins)
