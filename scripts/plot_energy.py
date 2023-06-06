@@ -17,7 +17,19 @@ if __name__ == '__main__':
 
     pot_energy, pot_energy_avg = get_energy(raw_data)
     temperatures, temperatures_avg = get_temperatures(fn)
-    time = np.arange(len(raw_data))*0.001 ## ps
+    time = np.arange(len(raw_data)) # fs *0.001 -> ps
+
+    # save the output!
+    titles = ['runtime','temperature','pot_energy','pot_energy_avg']
+    summary = np.array([time, temperatures, pot_energy, pot_energy_avg]).T
+    str_arr = summary.astype(str)
+
+    table = '\t'.join(titles)+'\n'
+    for smr in summary:
+        table += '\t'.join(smr)+'\n'
+    f = open('pot_energy_table.txt','w')
+    f.write(table)
+    f.close()
 
     ### check convergences
     if_converge(pot_energy_avg)
@@ -37,6 +49,7 @@ if __name__ == '__main__':
             ax.set_ylabel('T (K)')
         else:
             ax.set_ylabel('Energy (eV)')
-
+    
     fig.tight_layout()
     fig.savefig('energy.png',dpi=100)
+

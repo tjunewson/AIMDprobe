@@ -10,11 +10,12 @@ probe h-bonds formation between water - adsorbates/ water - water
 """ 
 
 ###### main functions ######
-def get_hbonds_ads(raw_data, traj, slab_list, ads_list, h_dist): #e.g., h_dist = 2.55+-0.05 for HO--H
+def get_hbonds_ads(raw_data, traj, slab_list, ads_list, h_dist): #e.g., h_dist = 3.0+-0.05 for HO--H
     """
     function to retrieve numbers of hydrogen bonds of adsorbate with solvents;
-    criteria for H-bonds: O-O distances / cutoff 2.55 AA / O-H-O angle > 140*;
+    criteria for H-bonds: O-O distances / cutoff 3.0 AA / O-H-O angle > 140*;
     e.g., FCHO* - H2O
+    The contribution of each atom in the adsorbate can be further analyzed.
     """
     print('Start counting h-bonds between adsorbate and water')
 
