@@ -52,3 +52,11 @@ def diffusion_rate(raw_data, raw_traj, atoms_list, time_step):
         diffusion_rates_avg.append(get_cumulative_avg(Rate))
 
     return diffusion_rates, diffusion_rates_avg, steps
+
+def animate(filename, raw_data, itv, timeframe, rotation):
+    """
+    make an animation based on AIMD trajectories;
+    images = raw_data
+    itv = slices of images
+    """
+    animation.write_gif(filename+'.gif', raw_data[::itv], interval=timeframe, rotation=rotation)
