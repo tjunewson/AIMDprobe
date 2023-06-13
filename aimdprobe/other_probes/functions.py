@@ -6,7 +6,7 @@ import os
 import json
 import numpy as np
 from ase import Atoms
-from ase.io import read, write
+from ase.io import read, write, animation
 from aimdprobe.useful_functions import get_cumulative_avg, get_real_distance
 
 """
