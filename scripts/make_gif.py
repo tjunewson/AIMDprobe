@@ -19,11 +19,12 @@ if __name__ == '__main__':
     # get raw data
     raw_data = init_data(fp, fn)
 
-    # filename, images, intervals, timeframe, rotation
+    # filename, images, intervals, size, timeframe, rotation
     filename = 'traj'
     step = 100
     timeframe = 200
+    size = (2,2,1)
     rotation = '10z,-80x'
-    animate(filename,raw_data, step, timeframe, rotation)
+    animate(filename,raw_data, step, size, timeframe, rotation)
 
     # output 'traj.gif' file with 200 ms/frame

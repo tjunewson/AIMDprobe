@@ -53,10 +53,12 @@ def diffusion_rate(raw_data, raw_traj, atoms_list, time_step):
 
     return diffusion_rates, diffusion_rates_avg, steps
 
-def animate(filename, raw_data, itv, timeframe, rotation):
+def animate(filename, raw_data, itv, size, timeframe, rotation):
     """
     make an animation based on AIMD trajectories;
     images = raw_data
     itv = slices of images
+    size = (a,b,c), enlargement of the unit cell by (a, b, c)
     """
-    animation.write_gif(filename+'.gif', raw_data[::itv], interval=timeframe, rotation=rotation)
+    data = [raw_data[::itv][i]*size for i in np.arange(len(raw_data[::itv]))]
+    animation.write_gif(filename+'.gif', data, interval=timeframe, rotation=rotation)
