@@ -6,13 +6,28 @@ from ase import Atoms
 from ase.io import  read, write
 from aimdprobe.energy_probe.functions import get_energy, get_temperatures
 from aimdprobe.useful_functions import get_cumulative_avg
+import argparse
 
 if __name__ == '__main__':
    """
    plot energies and temperatures
    """
-   #in this case, we have 6 vasprun files, with name as 'vasprun_n.xml'
-   N = range(1,6)
+   # In this case, we have n vasprun files, with name as 'vasprun_1.xml', 'vasprun_2.xml', ..., 'vasprun_n.xml'
+   # We apply an argument to define the file name and number.
+
+   # 'python plot_energy_multi_input.py n'
+
+   # configure all considered calculations
+   parser = argparse.ArgumentParser(description='Give folder name and repetition time')
+   #parser.add_argument('filename', default='vasprun', help='configure file name')
+   parser.add_argument('n',type=int, default=0, help='configure number of runs n')
+   args = parser.parse_args()
+
+   #foldername = args.filename
+   n_repeat = args.n
+   print(n_repeat)
+
+   N = range(1,n_repeat+1)
 
    Pot_energy = []
    for n in N:
