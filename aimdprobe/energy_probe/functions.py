@@ -14,7 +14,9 @@ def get_energy(raw_data):
     """
     pot_energy = []
     for rd in raw_data:
-        pot_energy.append(rd.get_potential_energy())
+        pe = rd.get_potential_energy()
+        if pe <= 0: # to remove 'INFINITY' energies in the traj
+            pot_energy.append(pe)
     pot_energy_avg = get_cumulative_avg(pot_energy)
     return pot_energy, pot_energy_avg
 
@@ -51,20 +53,22 @@ def get_kinetic_energy(outcar):
     kinetic_energy_avg = get_cumulative_avg(kinetic_energy)
     return kinetic_energy, kinetic_energy_avg  
     
-def if_converge(energy, cutoff = 10000, stdev = 0.02):
+def if_converge(energy, cutoff = 10000, stdev = 0.05):
     """
     check the convergence using the energies 
     in the cutoff region (e.g., last 10000 fs) with stdev (e.g., 0.02 eV) as the criterion
     """
-    if len(energy) < 10000:
-        return False
+    if len(energy) < cutoff:
+        return 'NotLongEnough'
     
-    if np.std(energy[cutoff:]) < stdev:
+    elif np.std(energy[cutoff:]) < stdev:
         converged_energy = energy[-1]
         print('The converged energy is ' + str(converged_energy) + ' eV')
+        return 'Converged' 
+    
     else:
         print('The energy is not converged!')
-
+        return 'NotConverged'
 
 
 

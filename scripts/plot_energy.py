@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     pot_energy, pot_energy_avg = get_energy(raw_data)
     temperatures, temperatures_avg = get_temperatures(fn)
-    time = np.arange(len(raw_data)) # fs *0.001 -> ps
+    time = np.arange(len(pot_energy)) # fs *0.001 -> ps
 
     # save the output!
     titles = ['runtime','temperature','pot_energy','pot_energy_avg']
@@ -32,8 +32,8 @@ if __name__ == '__main__':
     f.close()
 
     ### check convergences
-    if_converge(pot_energy_avg)
-
+    conv = if_converge(pot_energy_avg)
+    print(conv)
     ### for plot
     fig, (ax, ax1) = plt.subplots(1,2,figsize = (12,4))
 
