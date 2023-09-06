@@ -30,3 +30,7 @@ Sihang Liu, Sudarshan Vijay, Mianle Xu and more
 
 ## References
 
+Please cite: *Liu et al., Solvation of furfural at metal–water interfaces: Implications for aqueous phase hydrogenation reactions*
+J. Chem. Phys. 159, 084702 (2023) 
+https://doi.org/10.1063/5.0157573
+
