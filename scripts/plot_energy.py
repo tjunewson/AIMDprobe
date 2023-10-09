@@ -21,11 +21,11 @@ if __name__ == '__main__':
 
     # save the output!
     titles = ['runtime','temperature','pot_energy','pot_energy_avg']
-    summary = [str(time), str(temperatures[-1])+' K', str(pot_energy[-1])+' eV', str(pot_energy_avg[-1])+' eV']
+    summary = [str(time[-1]), str(temperatures[-1])+' K', str(pot_energy[-1])+' eV', str(pot_energy_avg[-1])+' eV']
 
     table = '\t'.join(titles)+'\n'
-    for smr in summary:
-        table += '\t'.join(smr)+'\n'
+    table += '\t'.join(summary)+'\n'
+    
     f = open('pot_energy_table.txt','w')
     f.write(table)
     f.close()
