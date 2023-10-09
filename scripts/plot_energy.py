@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ase import Atoms
 from ase.io import  read, write
-from aimdprobe.energy_probe.functions import get_energy, get_temperatures
+from aimdprobe.energy_probe.functions import get_energy, get_temperatures, if_converge
 
 
 if __name__ == '__main__':
@@ -21,8 +21,7 @@ if __name__ == '__main__':
 
     # save the output!
     titles = ['runtime','temperature','pot_energy','pot_energy_avg']
-    summary = np.array([time, temperatures, pot_energy, pot_energy_avg]).T
-    str_arr = summary.astype(str)
+    summary = [str(time), str(temperatures[-1])+' K', str(pot_energy[-1])+' eV', str(pot_energy_avg[-1])+' eV']
 
     table = '\t'.join(titles)+'\n'
     for smr in summary:
